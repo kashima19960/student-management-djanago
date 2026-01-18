@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}学生列表 - 学生管理系统{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+    <div>
+        <h2 class="h4 mb-1">学生信息</h2>
+        <p class="text-muted mb-0">支持学号精确查询或姓名模糊查询</p>
+    </div>
+    <a href="{% url 'student_create' %}" class="btn btn-cta transition">新增学生</a>
+</div>
+
+<div class="card p-3 mb-4">
+    <form method="get" class="row g-2 align-items-center">
+        <div class="col-12 col-md-8">
+            <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="输入学号或姓名" />
+        </div>
+        <div class="col-12 col-md-4 d-grid">
+            <button type="submit" class="btn btn-primary transition cursor-pointer">搜索</button>
+        </div>
+    </form>
+</div>
+
+<div class="card p-0">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th scope="col">学号</th>
+                    <th scope="col">姓名</th>
+                    <th scope="col">年龄</th>
+                    <th scope="col">专业</th>
+                    <th scope="col">入学时间</th>
+                    <th scope="col">毕业时间</th>
+                    <th scope="col" class="text-end">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                    <tr>
+                        <td>{{ student.student_id }}</td>
+                        <td>{{ student.name }}</td>
+                        <td>{{ student.age }}</td>
+                        <td>{{ student.major }}</td>
+                        <td>{{ student.enrollment_date }}</td>
+                        <td>{{ student.graduation_date }}</td>
+                        <td class="text-end">
+                            <a href="{% url 'student_update' student.pk %}" class="btn btn-outline-primary btn-sm transition">编辑</a>
+                            <form method="post" action="{% url 'student_delete' student.pk %}" class="d-inline" onsubmit="return confirm('确定要删除该学生吗？');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger btn-sm transition cursor-pointer">删除</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">暂无学生数据</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
