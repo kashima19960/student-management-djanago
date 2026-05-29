@@ -1,0 +1,12 @@
+# Development dependencies
+-r base.txt
+
+# Testing
+pytest-django==4.8.0
+factory-boy==3.3.0
+coverage==7.4.1
+
+# Code quality
+flake8==7.0.0
+black==24.3.0
+isort==5.13.2

@@ -2,9 +2,12 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
+from django.core.paginator import Paginator
 from django.db.models import Q
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
+from .decorators import permission_required_custom, role_required
 from .forms import RegisterForm, StudentForm
 from .models import Student
 
@@ -57,17 +60,23 @@ def logout_view(request):
 @login_required
 def student_list(request):
     query = (request.GET.get("q") or "").strip()
-    students = Student.objects.all()
+    students = Student.objects.select_related("class_info", "class_info__department").all()
     if query:
-        students = students.filter(Q(student_id=query) | Q(name__icontains=query))
+        students = students.filter(
+            Q(student_id=query) | Q(name__icontains=query) | Q(major__icontains=query)
+        )
+    paginator = Paginator(students, 15)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
     context = {
-        "students": students,
+        "page_obj": page_obj,
+        "students": page_obj.object_list,
         "query": query,
     }
     return render(request, "student_list.html", context)
 
 
-@login_required
+@permission_required_custom("students.can_manage_student")
 def student_create(request):
     if request.method == "POST":
         form = StudentForm(request.POST)
@@ -81,7 +90,7 @@ def student_create(request):
     return render(request, "student_form.html", {"form": form, "mode": "create"})
 
 
-@login_required
+@permission_required_custom("students.can_manage_student")
 def student_update(request, pk):
     student = get_object_or_404(Student, pk=pk)
     if request.method == "POST":
@@ -96,10 +105,12 @@ def student_update(request, pk):
     return render(request, "student_form.html", {"form": form, "mode": "update", "student": student})
 
 
-@login_required
+@permission_required_custom("students.can_manage_student")
 def student_delete(request, pk):
     student = get_object_or_404(Student, pk=pk)
     if request.method == "POST":
         student.delete()
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return JsonResponse({"success": True, "message": "学生信息已删除"})
         messages.success(request, "学生信息已删除")
     return redirect("student_list")

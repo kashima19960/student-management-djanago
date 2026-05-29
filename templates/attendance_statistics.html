@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}考勤统计 - {{ course.name }}{% endblock %}{% block page_title %}考勤统计：{{ course.name }}{% endblock %}
+{% block content %}
+<div class="row g-3 mb-4">
+<div class="col-md-2"><div class="card p-3 text-center"><div class="text-muted small">总记录</div><div class="fs-4 fw-bold">{{ total }}</div></div></div>
+<div class="col-md-2"><div class="card p-3 text-center"><div class="text-muted small">出勤</div><div class="fs-4 fw-bold text-success">{{ present }}</div></div></div>
+<div class="col-md-2"><div class="card p-3 text-center"><div class="text-muted small">迟到</div><div class="fs-4 fw-bold text-warning">{{ late }}</div></div></div>
+<div class="col-md-2"><div class="card p-3 text-center"><div class="text-muted small">缺勤</div><div class="fs-4 fw-bold text-danger">{{ absent }}</div></div></div>
+<div class="col-md-2"><div class="card p-3 text-center"><div class="text-muted small">请假</div><div class="fs-4 fw-bold text-info">{{ leave }}</div></div></div>
+<div class="col-md-2"><div class="card p-3 text-center"><div class="text-muted small">出勤率</div><div class="fs-4 fw-bold">{{ attendance_rate }}%</div></div></div>
+</div>
+<div class="card p-3"><h6>考勤分布</h6><canvas id="chartAtt" style="max-width:400px;margin:0 auto"></canvas></div>
+{% endblock %}
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+new Chart(document.getElementById('chartAtt'),{type:'pie',data:{labels:['出勤','迟到','缺勤','请假'],datasets:[{data:[{{ present }},{{ late }},{{ absent }},{{ leave }}],backgroundColor:['#10B981','#F59E0B','#EF4444','#3B82F6']}]},options:{responsive:true}});
+</script>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}考勤录入 - {{ course.name }}{% endblock %}{% block page_title %}考勤录入：{{ course.name }}{% endblock %}
+{% block content %}
+<div class="card p-4">
+<form method="post">{% csrf_token %}
+<div class="mb-3"><label class="form-label">日期</label><input type="date" name="date" class="form-control" value="{{ entry_date }}" style="max-width:200px"></div>
+<table class="table"><thead><tr><th>学号</th><th>姓名</th><th>状态</th><th>备注</th></tr></thead>
+<tbody>{% for e in enrollments %}{% with existing=existing_map|dictsort:e.student.pk %}<tr>
+<td>{{ e.student.student_id }}</td><td>{{ e.student.name }}</td>
+<td><select name="status_{{ e.student.pk }}" class="form-select form-select-sm">
+<option value="present" {% if existing.status == "present" %}selected{% endif %}>出勤</option>
+<option value="late" {% if existing.status == "late" %}selected{% endif %}>迟到</option>
+<option value="absent" {% if existing.status == "absent" %}selected{% endif %}>缺勤</option>
+<option value="leave" {% if existing.status == "leave" %}selected{% endif %}>请假</option>
+</select></td>
+<td><input type="text" name="remark_{{ e.student.pk }}" class="form-control form-control-sm" value="{{ existing.remark|default:'' }}"></td>
+</tr>{% endwith %}{% endfor %}</tbody></table>
+<button class="btn btn-primary">保存考勤</button>
+<a href="{% url 'attendance_list' %}" class="btn btn-outline-secondary ms-2">返回</a>
+</form></div>
+{% endblock %}

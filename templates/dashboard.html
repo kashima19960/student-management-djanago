@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}首页{% endblock %}{% block page_title %}数据概览{% endblock %}
+{% block content %}
+<div class="row g-3 mb-4">
+<div class="col-md-4"><div class="card p-3"><div class="d-flex align-items-center gap-3"><div class="bg-primary bg-opacity-10 rounded-circle p-3"><i class="bi bi-people text-primary fs-4"></i></div><div><div class="text-muted small">学生总数</div><div class="fs-4 fw-bold">{{ stats.total_students }}</div></div></div></div></div>
+<div class="col-md-4"><div class="card p-3"><div class="d-flex align-items-center gap-3"><div class="bg-success bg-opacity-10 rounded-circle p-3"><i class="bi bi-book text-success fs-4"></i></div><div><div class="text-muted small">课程总数</div><div class="fs-4 fw-bold">{{ stats.total_courses }}</div></div></div></div></div>
+<div class="col-md-4"><div class="card p-3"><div class="d-flex align-items-center gap-3"><div class="bg-warning bg-opacity-10 rounded-circle p-3"><i class="bi bi-person-badge text-warning fs-4"></i></div><div><div class="text-muted small">教师总数</div><div class="fs-4 fw-bold">{{ stats.total_teachers }}</div></div></div></div></div>
+</div>
+<div class="row g-3">
+<div class="col-md-6"><div class="card p-3"><h6>各专业人数分布</h6><canvas id="chartMajor"></canvas></div></div>
+<div class="col-md-6"><div class="card p-3"><h6>年龄分布</h6><canvas id="chartAge"></canvas></div></div>
+<div class="col-md-6"><div class="card p-3"><h6>年度招生趋势</h6><canvas id="chartTrend"></canvas></div></div>
+<div class="col-md-6"><div class="card p-3"><h6>GPA 分布</h6><canvas id="chartGpa"></canvas></div></div>
+<div class="col-12"><div class="card p-3"><h6>各课程出勤率</h6><canvas id="chartAttendance" height="80"></canvas></div></div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+function fc(u,cb){fetch(u).then(r=>r.json()).then(cb)}
+function mc(id,t,u,lb){fc(u,d=>{new Chart(document.getElementById(id),{type:t,data:{labels:d.labels,datasets:[{label:lb||'',data:d.values,backgroundColor:['#2563EB','#3B82F6','#60A5FA','#93C5FD','#BFDBFE','#F97316','#10B981','#8B5CF6','#EC4899','#F59E0B'],borderWidth:1}]},options:{responsive:true,plugins:{legend:{display:t==='pie'}},scales:t==='pie'?{}:{y:{beginAtZero:true}}}})})}
+mc('chartMajor','pie','{% url "dashboard_api_major_distribution" %}');
+mc('chartAge','bar','{% url "dashboard_api_age_distribution" %}','人数');
+mc('chartTrend','line','{% url "dashboard_api_enrollment_trend" %}','人数');
+mc('chartGpa','bar','{% url "dashboard_api_gpa_distribution" %}','人数');
+mc('chartAttendance','bar','{% url "dashboard_api_attendance_rate" %}','出勤率%');
+</script>
+{% endblock %}

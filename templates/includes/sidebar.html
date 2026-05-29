@@ -1,0 +1,33 @@
+{% load auth_tags %}
+<nav class="sidebar">
+<a class="brand" href="{% url 'dashboard' %}"><i class="bi bi-mortarboard-fill"></i> 学生管理系统</a>
+<div class="nav-section"><a class="nav-link" href="{% url 'dashboard' %}"><i class="bi bi-house-door"></i> 首页</a></div>
+<div class="nav-section">
+<div class="nav-section-title">数据管理</div>
+<a class="nav-link" href="{% url 'student_list' %}"><i class="bi bi-people"></i> 学生列表</a>
+{% has_role "admin" "teacher" as can_manage %}{% if can_manage %}
+<a class="nav-link" href="{% url 'student_create' %}"><i class="bi bi-person-plus"></i> 新增学生</a>
+<a class="nav-link" href="{% url 'import_export' %}"><i class="bi bi-file-earmark-excel"></i> 导入导出</a>
+{% endif %}
+</div>
+{% has_role "admin" as is_admin %}{% if is_admin %}
+<div class="nav-section">
+<div class="nav-section-title">基础数据</div>
+<a class="nav-link" href="{% url 'department_list' %}"><i class="bi bi-building"></i> 院系管理</a>
+<a class="nav-link" href="{% url 'class_list' %}"><i class="bi bi-collection"></i> 班级管理</a>
+<a class="nav-link" href="{% url 'teacher_list' %}"><i class="bi bi-person-badge"></i> 教师管理</a>
+<a class="nav-link" href="{% url 'course_list' %}"><i class="bi bi-book"></i> 课程管理</a>
+</div>
+{% endif %}
+{% has_role "admin" "teacher" as is_mt %}{% if is_mt %}
+<div class="nav-section">
+<div class="nav-section-title">教务管理</div>
+<a class="nav-link" href="{% url 'grade_list' %}"><i class="bi bi-card-checklist"></i> 成绩管理</a>
+<a class="nav-link" href="{% url 'attendance_list' %}"><i class="bi bi-calendar-check"></i> 考勤管理</a>
+</div>
+{% endif %}
+{% if is_admin %}
+<div class="nav-section"><div class="nav-section-title">系统</div>
+<a class="nav-link" href="/admin/" target="_blank"><i class="bi bi-gear"></i> 管理后台</a></div>
+{% endif %}
+</nav>

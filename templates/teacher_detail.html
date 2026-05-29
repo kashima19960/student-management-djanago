@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}教师详情{% endblock %}{% block page_title %}{{ teacher.name }}{% endblock %}
+{% block content %}
+<div class="card p-4 mb-3"><div class="row">
+<div class="col-md-3"><strong>工号：</strong>{{ teacher.teacher_id }}</div>
+<div class="col-md-3"><strong>院系：</strong>{{ teacher.department.name }}</div>
+<div class="col-md-3"><strong>电话：</strong>{{ teacher.phone|default:"-" }}</div>
+<div class="col-md-3"><strong>邮箱：</strong>{{ teacher.email|default:"-" }}</div>
+</div></div>
+<h6 class="mb-3">授课列表</h6>
+<div class="card p-0"><table class="table table-hover mb-0">
+<thead><tr><th>课程编号</th><th>课程名称</th><th>学分</th><th>院系</th><th class="text-end">操作</th></tr></thead>
+<tbody>{% for c in courses %}<tr><td>{{ c.course_id }}</td><td>{{ c.name }}</td><td>{{ c.credit }}</td><td>{{ c.department.name }}</td>
+<td class="text-end"><a href="{% url 'course_detail' c.pk %}" class="btn btn-outline-primary btn-sm">查看</a></td></tr>
+{% empty %}<tr><td colspan="5" class="text-center py-4 text-muted">暂无课程</td></tr>{% endfor %}</tbody></table></div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}成绩统计 - {{ course.name }}{% endblock %}{% block page_title %}成绩统计：{{ course.name }}{% endblock %}
+{% block content %}
+<div class="row g-3 mb-4">
+<div class="col-md-3"><div class="card p-3 text-center"><div class="text-muted small">平均分</div><div class="fs-4 fw-bold">{{ stats.avg_score|floatformat:1|default:"-" }}</div></div></div>
+<div class="col-md-3"><div class="card p-3 text-center"><div class="text-muted small">最高分</div><div class="fs-4 fw-bold">{{ stats.max_score|default:"-" }}</div></div></div>
+<div class="col-md-3"><div class="card p-3 text-center"><div class="text-muted small">最低分</div><div class="fs-4 fw-bold">{{ stats.min_score|default:"-" }}</div></div></div>
+<div class="col-md-3"><div class="card p-3 text-center"><div class="text-muted small">及格率</div><div class="fs-4 fw-bold">{{ pass_rate }}%</div></div></div>
+</div>
+<div class="card p-3"><h6>GPA 分布</h6><canvas id="chartGpa"></canvas></div>
+{% endblock %}
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+new Chart(document.getElementById('chartGpa'),{type:'bar',data:{labels:['4.0','3.0-3.9','2.0-2.9','1.0-1.9','0-0.9'],datasets:[{label:'人数',data:[{{ gpa_dist.4.0 }},{{ gpa_dist.3.0 }},{{ gpa_dist.2.0 }},{{ gpa_dist.1.0 }},{{ gpa_dist.0.0 }}],backgroundColor:['#10B981','#2563EB','#F59E0B','#F97316','#EF4444']}]},options:{responsive:true,plugins:{legend:{display:false}}}});
+</script>
+{% endblock %}
